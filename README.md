@@ -2,4 +2,4 @@
 
 sbt plugin for [TASTy-MiMa](https://github.com/scalacenter/tasty-mima).
 
-Work in progress.
+See the readme of TASTy-MiMa for motivation and basic usage instructions.
