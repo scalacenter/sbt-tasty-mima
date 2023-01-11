@@ -1,4 +1,7 @@
 
+// Must stay in sync with TastyMiMaPlugin.TastyMiMaVersion
+val TastyMiMaVersion = "0.1.1"
+
 inThisBuild(Def.settings(
   crossScalaVersions := Seq("2.12.17"),
   scalaVersion := crossScalaVersions.value.head,
@@ -45,7 +48,7 @@ lazy val `sbt-tasty-mima` = project.in(file("sbt-tasty-mima"))
     name := "sbt-tasty-mima",
 
     strictCompileSettings,
-    libraryDependencies += "ch.epfl.scala" % "tasty-mima-interface" % "0.1.0",
+    libraryDependencies += "ch.epfl.scala" % "tasty-mima-interface" % TastyMiMaVersion,
 
     scriptedBufferLog := false,
     scriptedLaunchOpts := {

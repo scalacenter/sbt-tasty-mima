@@ -8,6 +8,9 @@ import sbt.librarymanagement._
 import sbt.plugins.JvmPlugin
 
 object TastyMiMaPlugin extends AutoPlugin {
+  // Must stay in sync with TastyMiMaVersion in build.sbt
+  private val TastyMiMaVersion = "0.1.1"
+
   object autoImport {
     val tastyMiMaPreviousArtifacts: SettingKey[Set[ModuleID]] =
       settingKey("Previous released artifacts used to test TASTy compatibility.")
@@ -67,7 +70,7 @@ object TastyMiMaPlugin extends AutoPlugin {
       val lm = (tastyMiMaClasspath / dependencyResolution).value
       val retrieveDir = s.cacheDirectory / "retrieve"
 
-      val moduleID = "ch.epfl.scala" % "tasty-mima_3" % "0.1.0"
+      val moduleID = "ch.epfl.scala" % "tasty-mima_3" % TastyMiMaVersion
       lm.retrieve(moduleID, None, retrieveDir, log) match {
         case Left(unresolvedWarning) =>
           throw unresolvedWarning.resolveException
