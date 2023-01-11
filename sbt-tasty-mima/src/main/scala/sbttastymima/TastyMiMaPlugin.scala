@@ -63,7 +63,10 @@ object TastyMiMaPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Setting[_]] = Def.settings(
     tastyMiMaPreviousArtifacts := Set.empty,
-    tastyMiMaClasspath / dependencyResolution := dependencyResolution.value,
+    tastyMiMaClasspath / dependencyResolution := {
+      val config = csrConfiguration.value.withAutoScalaLibrary(false)
+      lmcoursier.CoursierDependencyResolution(config)
+    },
     tastyMiMaClasspath := {
       val s = streams.value
       val log = s.log
