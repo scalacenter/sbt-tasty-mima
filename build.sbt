@@ -28,7 +28,9 @@ inThisBuild(Def.settings(
     Developer("bishabosha", "Jamie Thompson", "bishbashboshjt@gmail.com", url("https://github.com/bishabosha")),
   ),
 
-  versionScheme := Some("early-semver"),
+  versionPolicyIntention := Compatibility.BinaryCompatible,
+  // Ignore dependencies to internal modules whose version is like `1.2.3+4...` (see https://github.com/scalacenter/sbt-version-policy#how-to-integrate-with-sbt-dynver)
+  versionPolicyIgnoredInternalDependencyVersions := Some("^\\d+\\.\\d+\\.\\d+\\+\\d+".r),
 ))
 
 val strictCompileSettings = Seq(
@@ -49,6 +51,9 @@ lazy val `sbt-tasty-mima` = project.in(file("sbt-tasty-mima"))
 
     strictCompileSettings,
     libraryDependencies += "ch.epfl.scala" % "tasty-mima-interface" % TastyMiMaVersion,
+
+    // Skip `versionCheck` for snapshot releases
+    versionCheck / skip := isSnapshot.value,
 
     scriptedBufferLog := false,
     scriptedLaunchOpts := {
