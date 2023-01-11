@@ -99,14 +99,11 @@ object TastyMiMaPlugin extends AutoPlugin {
         .withRetrieveManaged(retrieveConfiguration)
 
       for (artifactID0 <- artifactIDs.toList) yield {
-        val artifactID1 =
-          if (artifactID0.configurations.isDefined) artifactID0
-          else artifactID0.withConfigurations(Some("compile"))
         val artifactID = scalaModInfo match {
           case None =>
-            artifactID1
+            artifactID0
           case Some(modInfo) =>
-            CrossVersion(modInfo.scalaFullVersion, modInfo.scalaBinaryVersion)(artifactID1)
+            CrossVersion(modInfo.scalaFullVersion, modInfo.scalaBinaryVersion)(artifactID0)
               .withCrossVersion(CrossVersion.disabled)
         }
         val module = lm.wrapDependencyInModule(artifactID, scalaModInfo)
@@ -126,7 +123,8 @@ object TastyMiMaPlugin extends AutoPlugin {
             val cp: Seq[Path] = javaBootCp ++ cp0.map(_._2)
 
             val entry: Path = cp0.find { pair =>
-              pair._1 == artifactID
+              val module = pair._1
+              module.organization == artifactID.organization && module.name == artifactID.name
             }.getOrElse {
               throw new MessageOnlyException(s"Could not find entry for $artifactID in " + cp0.mkString("\n", "\n", ""))
             }._2
