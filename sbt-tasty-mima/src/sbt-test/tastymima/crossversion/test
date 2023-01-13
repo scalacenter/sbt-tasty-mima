@@ -6,7 +6,7 @@
 > set version := "0.0.2-SNAPSHOT"
 
 # filters are set in the build file, so tasty-mima check should pass
-> ++3.1.0
+> ++3.2.2
 > tastyMiMaReportIssues
 
 # Also test 2.x, because YOLO
@@ -17,7 +17,7 @@
 
 # remove all filters so tasty-mima check fails
 > set tastyMiMaConfig ~= { _.withReplacedProblemFilters(java.util.Arrays.asList()) }
-> ++3.1.0
+> ++3.2.2
 -> tastyMiMaReportIssues
 
 # Also test 2.x, because YOLO

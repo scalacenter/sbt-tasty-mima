@@ -1,6 +1,6 @@
 
 // Must stay in sync with TastyMiMaPlugin.TastyMiMaVersion
-val TastyMiMaVersion = "0.1.2"
+val TastyMiMaVersion = "0.1.3"
 
 inThisBuild(Def.settings(
   crossScalaVersions := Seq("2.12.17"),
