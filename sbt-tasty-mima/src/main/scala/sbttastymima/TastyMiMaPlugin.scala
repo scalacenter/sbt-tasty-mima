@@ -15,6 +15,12 @@ object TastyMiMaPlugin extends AutoPlugin {
     val tastyMiMaPreviousArtifacts: SettingKey[Set[ModuleID]] =
       settingKey("Previous released artifacts used to test TASTy compatibility.")
 
+    val tastyMiMaVersionOverride: SettingKey[Option[String]] =
+      settingKey("Override the version of tasty-mima").withRank(KeyRanks.DSetting)
+
+    val tastyMiMaTastyQueryVersionOverride: SettingKey[Option[String]] =
+      settingKey("Override the version of tasty-query used by tasty-mima").withRank(KeyRanks.DSetting)
+
     val tastyMiMaClasspath: TaskKey[Classpath] =
       taskKey("Classpath of tasty-mima itself")
 
@@ -41,6 +47,8 @@ object TastyMiMaPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = allRequirements
 
   override def globalSettings: Seq[Setting[_]] = Def.settings(
+    tastyMiMaVersionOverride := None,
+    tastyMiMaTastyQueryVersionOverride := None,
     tastyMiMaConfig := new tastymima.intf.Config(),
     tastyMiMaJavaBootClasspath := {
       System.getProperty("sun.boot.class.path") match {
@@ -72,9 +80,24 @@ object TastyMiMaPlugin extends AutoPlugin {
       val log = s.log
       val lm = (tastyMiMaClasspath / dependencyResolution).value
       val retrieveDir = s.cacheDirectory / "retrieve"
+      val tastyMiMaVersion = tastyMiMaVersionOverride.value.getOrElse(TastyMiMaVersion)
+      val tastyQueryVersionOverride = tastyMiMaTastyQueryVersionOverride.value
 
-      val moduleID = "ch.epfl.scala" % "tasty-mima_3" % TastyMiMaVersion
-      lm.retrieve(moduleID, None, retrieveDir, log) match {
+      val tastyMiMaModuleID = "ch.epfl.scala" % "tasty-mima_3" % tastyMiMaVersion
+
+      val moduleDescriptor: ModuleDescriptor = tastyQueryVersionOverride match {
+        case None =>
+          lm.wrapDependencyInModule(tastyMiMaModuleID)
+        case Some(tastyQueryVersion) =>
+          val patchedTastyMiMaModuleID = tastyMiMaModuleID.exclude("ch.epfl.scala", "tasty-query_3")
+          val tastyQueryModuleID = "ch.epfl.scala" % "tasty-query_3" % tastyQueryVersion
+          val virtualCombinedModuleID =
+            "ch.epfl.scala" % "tasty-mima-and-tasty-query" % s"$tastyMiMaVersion-$tastyQueryVersion"
+          val dependencies = Vector(patchedTastyMiMaModuleID, tastyQueryModuleID)
+          lm.moduleDescriptor(virtualCombinedModuleID, dependencies, scalaModuleInfo = None)
+      }
+
+      lm.retrieve(moduleDescriptor, retrieveDir, log) match {
         case Left(unresolvedWarning) =>
           throw unresolvedWarning.resolveException
         case Right(cp) =>
