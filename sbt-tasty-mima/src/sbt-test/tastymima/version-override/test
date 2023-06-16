@@ -1,0 +1,15 @@
+> show tastyMiMaClasspath
+
+> set Compile / scalaSource := baseDirectory.value / "src" / "main" / "scala" / "v1"
+> set version := "0.0.1-SNAPSHOT"
+> publishLocal
+
+> set Compile / scalaSource := baseDirectory.value / "src" / "main" / "scala" / "v2"
+> set version := "0.0.2-SNAPSHOT"
+
+# filters are set in the build file, so tasty-mima check should pass
+> tastyMiMaReportIssues
+
+# remove all filters so tasty-mima check fails
+> set tastyMiMaConfig ~= { _.withReplacedProblemFilters(java.util.Arrays.asList()) }
+-> tastyMiMaReportIssues
