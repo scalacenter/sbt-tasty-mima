@@ -30,3 +30,5 @@ jobs:
       run: sbt scalafmtCheck
     - name: Run version policy check
       run: sbt versionPolicyCheck
+    - name: Run tastyMiMaReportIssues
+      run: sbt tastyMiMaReportIssues
