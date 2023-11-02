@@ -1,6 +1,6 @@
 
 // Must stay in sync with TastyMiMaPlugin.TastyMiMaVersion
-val TastyMiMaVersion = "0.5.0"
+val TastyMiMaVersion = "1.0.0"
 
 inThisBuild(Def.settings(
   crossScalaVersions := Seq("2.12.17"),
@@ -54,6 +54,32 @@ lazy val `sbt-tasty-mima` = project.in(file("sbt-tasty-mima"))
 
     // Skip `versionCheck` for snapshot releases
     versionCheck / skip := isSnapshot.value,
+
+    tastyMiMaPreviousArtifacts := mimaPreviousArtifacts.value,
+    tastyMiMaConfig ~= { prev =>
+      import tastymima.intf._
+
+      prev
+        .withMoreArtifactPrivatePackages(java.util.Arrays.asList(
+          "sbttastymima",
+        ))
+        .withMoreProblemFilters(java.util.Arrays.asList(
+          // Scala2PickleFormatException: expected local symbol reference but found PickleReader$NoExternalSymbolRef
+          ProblemMatcher.make(ProblemKind.InternalError, "sbttastymima.TastyMiMaPlugin.autoImport.tastyMiMaPreviousArtifacts")
+        ))
+    },
+
+    /* As an sbt plugin, the published artifact does not declare an explicit
+     * dependency on the sbt artifacts; they are provided by sbt instead.
+     * However, tasty-query needs them to resolve types, so we add them to
+     * the previous classpaths here.
+     */
+    tastyMiMaPreviousClasspaths := {
+      val prev = tastyMiMaPreviousClasspaths.value
+      val additionalClasspath = Attributed.data((Compile / externalDependencyClasspath).value).map(_.toPath())
+      for ((moduleID, cp, entry) <- prev) yield
+        (moduleID, cp ++ additionalClasspath, entry)
+    },
 
     scriptedBufferLog := false,
     scriptedLaunchOpts := {
