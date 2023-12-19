@@ -9,7 +9,7 @@ import sbt.plugins.JvmPlugin
 
 object TastyMiMaPlugin extends AutoPlugin {
   // Must stay in sync with TastyMiMaVersion in build.sbt
-  private val TastyMiMaVersion = "1.0.0"
+  private val TastyMiMaVersion = "1.1.0"
 
   object autoImport {
     val tastyMiMaPreviousArtifacts: SettingKey[Set[ModuleID]] =
