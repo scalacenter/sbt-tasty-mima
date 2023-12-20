@@ -63,10 +63,6 @@ lazy val `sbt-tasty-mima` = project.in(file("sbt-tasty-mima"))
         .withMoreArtifactPrivatePackages(java.util.Arrays.asList(
           "sbttastymima",
         ))
-        .withMoreProblemFilters(java.util.Arrays.asList(
-          // Scala2PickleFormatException: expected local symbol reference but found PickleReader$NoExternalSymbolRef
-          ProblemMatcher.make(ProblemKind.InternalError, "sbttastymima.TastyMiMaPlugin.autoImport.tastyMiMaPreviousArtifacts")
-        ))
     },
 
     /* As an sbt plugin, the published artifact does not declare an explicit
