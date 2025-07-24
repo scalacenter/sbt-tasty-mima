@@ -1,6 +1,6 @@
 import tastymima.intf._
 
-scalaVersion := "3.5.0"
+scalaVersion := "3.7.1"
 name := "test-project"
 
 tastyMiMaPreviousArtifacts := Set(organization.value %% name.value % "0.0.1-SNAPSHOT")
